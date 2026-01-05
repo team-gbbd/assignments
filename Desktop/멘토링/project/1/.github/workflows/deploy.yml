@@ -1,0 +1,25 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy files and deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: 43.203.221.80
+          username: ec2-user
+          key: 479324456849
+          script: |
+            docker pull 123456789012.dkr.ecr.ap-northeast-2.amazonaws.com/team-assignment-repo:latest
+            docker stop my-app || true
+            docker rm my-app || true
+            docker run -d --name my-app -p 80:80 123456789012.dkr.ecr.ap-northeast-2.amazonaws.com/team-assignment-repo:latest
